@@ -196,6 +196,11 @@ class Storage(StorageInterface):
         return None, f"Фраза с ключом '{key}' не найдена"
     
     def add_phrase(self, phrase: Phrase) -> str|None:
+        # Проверка, что ключ не совпадает с другим ключом
+        for existing_phrase in self.Phrases:
+            if existing_phrase.key == phrase.key:
+                return f"Фраза с ключом '{phrase.key}' уже существует"
+        
         self.Phrases.append(phrase)
         return None
     
@@ -231,6 +236,11 @@ class Storage(StorageInterface):
         return found_values, None
     
     def add_value(self, value: Value) -> str|None:
+        # Проверка, что ключ не совпадает с другим ключом
+        for existing_value in self.Values:
+            if existing_value.key == value.key:
+                return f"Значение с ключом '{value.key}' уже существует"
+        
         self.Values.append(value)
         return None
     
