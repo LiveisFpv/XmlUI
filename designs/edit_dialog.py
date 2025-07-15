@@ -79,22 +79,33 @@ class EditPhraseDialog(QDialog):
                 padding: 5px 15px;
                 border-radius: 10px;
                 min-width: 80px;
+                outline: none;
             }
         """)
         
         # Применяем стили к конкретным кнопкам
         ok_button = self.button_box.button(QDialogButtonBox.StandardButton.Ok)
         ok_button.setStyleSheet("""
-            background-color: #388E3C;
-            color: white;
-            border: 1px solid #43A047;
+            QPushButton {
+                background-color: #388E3C;
+                color: white;
+                border: 1px solid #2E7D32;
+            }
+            QPushButton:hover {
+                background-color: #2E7D32;
+            }
         """)
         
         cancel_button = self.button_box.button(QDialogButtonBox.StandardButton.Cancel)
         cancel_button.setStyleSheet("""
-            background-color: #D32F2F;
-            color: white;
-            border: 1px solid #E53935;
+            QPushButton {
+                background-color: #D32F2F;
+                color: white;
+                border: 1px solid #C62828;
+            }
+            QPushButton:hover {
+                background-color: #C62828;
+            }
         """)
         
         self.button_box.accepted.connect(self.accept)
@@ -193,16 +204,26 @@ class EditValueDialog(QDialog):
         # Применяем стили к конкретным кнопкам
         ok_button = self.button_box.button(QDialogButtonBox.StandardButton.Ok)
         ok_button.setStyleSheet("""
-            background-color: #388E3C;
-            color: white;
-            border: 1px solid #43A047;
+            QPushButton {
+                background-color: #388E3C;
+                color: white;
+                border: 1px solid #2E7D32;
+            }
+            QPushButton:hover {
+                background-color: #2E7D32;
+            }
         """)
         
         cancel_button = self.button_box.button(QDialogButtonBox.StandardButton.Cancel)
         cancel_button.setStyleSheet("""
-            background-color: #D32F2F;
-            color: white;
-            border: 1px solid #E53935;
+            QPushButton {
+                background-color: #D32F2F;
+                color: white;
+                border: 1px solid #C62828;
+            }
+            QPushButton:hover {
+                background-color: #C62828;
+            }
         """)
         
         self.button_box.accepted.connect(self.accept)

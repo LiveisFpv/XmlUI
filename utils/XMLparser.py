@@ -48,7 +48,13 @@ class XMLParser:
 
     @staticmethod
     def save_to_file(filepath: str, phrases: List[Phrase], values: List[Value]) -> str|None:
+        # Создаем резервную копию файла, если он существует
+        import os
+        if os.path.exists(filepath):
+            backup_filepath = filepath + '.bak'
+            os.rename(filepath, backup_filepath)
         try:
+            # Собираеи XML структуру
             root = ET.Element('Config')
 
             # Values
@@ -57,6 +63,11 @@ class XMLParser:
                 val_el = ET.SubElement(values_el, 'Value', {'key': val.key})
                 val_el.text = val.text
 
+            values_dict = {val.key: val for val in values}
+            
+            def is_value(key: str) -> bool:
+                return key in values_dict
+            
             # Phrases
             phrases_el = ET.SubElement(root, 'Phrases')
             for phrase in phrases:
@@ -65,7 +76,8 @@ class XMLParser:
                 if phrase.params:
                     params_el = ET.SubElement(phrase_el, 'Params')
                     for param in phrase.params:
-                        param_el = ET.SubElement(params_el, 'Param', {'required': param.required})
+                        # Check if the parameter is defined in values
+                        param_el = ET.SubElement(params_el, 'Param', {'required': "true" if is_value(param.name) else "false"})
                         param_el.text = param.name
 
             # Write to file
@@ -75,4 +87,8 @@ class XMLParser:
 
             return None
         except Exception as e:
+            # Записываем резервную копию в случае ошибки
+            if os.path.exists(backup_filepath):
+                os.rename(backup_filepath, filepath)
+            
             return f"Ошибка при сохранении XML: {str(e)}"

@@ -20,6 +20,7 @@ class MainController(BaseController):
         self._view.actionSave_as.triggered.connect(lambda: self.__save_to_file(None))
         self._view.actionSave.triggered.connect(lambda: self.__save_to_file(self.__loaded_filepath))
         self._view.actionOpen.triggered.connect(self.__load_from_file)
+        self._view.actionNew_file.triggered.connect(self.__clear_data)
         self._view.add_button.clicked.connect(self.__add_rec)
         self._view.search_button.clicked.connect(lambda: self.__on_search(self._view.selector.get_selected()))
 
@@ -29,15 +30,12 @@ class MainController(BaseController):
         if button:
             if button.objectName() == "value_button":
                 self.__valueController.show_values()
-                print("Value button selected")
             elif button.objectName() == "phrases_button":
                 self.__phraseController.show_phrases()
-                print("Phrases button selected")
             else:
                 print(f"Selected button: {button.objectName()}")
         else:
             self.__no_selection()
-            print("No button selected")
 
     def __on_search(self, button:SelectButton|None):
         """Обработчик поиска"""
@@ -79,6 +77,18 @@ class MainController(BaseController):
             else:
                 PyQt6.QtWidgets.QMessageBox.information(self._view, "Успех", "Данные успешно сохранены")
                 self.__loaded_filepath = filepath
+    
+    def __clear_data(self):
+        """Очистить данные"""
+        reply = PyQt6.QtWidgets.QMessageBox.question(self._view, "Подтверждение", "Вы уверены, что хотите очистить все данные и создать новый файл?", 
+                                                     PyQt6.QtWidgets.QMessageBox.StandardButton.Yes | PyQt6.QtWidgets.QMessageBox.StandardButton.No)
+        if reply == PyQt6.QtWidgets.QMessageBox.StandardButton.Yes:
+            self._storage.clear_data()
+            self.__loaded_filepath = None
+            self.__no_selection()
+            self._view.search_field.clear()
+            self._view.key_field.clear()
+            self._view.text_field.clear()
 
     def __add_rec(self):
         """Добавить запись"""
@@ -110,3 +120,6 @@ class MainController(BaseController):
             self.__phraseController.add_phrase(key, text)
         else:
             PyQt6.QtWidgets.QMessageBox.warning(self._view, "Ошибка", "Выберите категорию для добавления записи")
+            return
+        self._view.key_field.clear()
+        self._view.text_field.clear()

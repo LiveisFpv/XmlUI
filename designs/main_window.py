@@ -222,6 +222,45 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionSave_as)
+        self.menuFile.setStyleSheet("""
+            QMenu {
+                background-color: #f2f2f2;
+                border: 1px solid #ddd;
+                border-radius: 10px;
+                padding: 8px;
+                font-size: 13px;
+            }
+            QMenu::item {
+                padding: 6px 24px;
+                padding-left: 12px;
+                background-color: transparent;
+                color: #222;
+            }
+            QMenu::item:selected {
+                background-color: #e0e0e0;
+                color: #0078d7;
+                border-radius: 6px;
+            }
+        """)
+        self.menubar.setStyleSheet("""
+            QMenuBar {
+                margin: 0px;
+                padding: 0px;
+                text-align: center;
+                font-size: 11px;
+                background: #eee;
+            }
+            QMenuBar::item {
+                background: transparent;
+                color: #222;
+                padding: 6px 24px;
+                border-radius: 6px;
+            }
+            QMenuBar::item:selected {
+                background: #e0e0e0;
+                color: #0078d7;
+            }
+        """)
         self.menubar.addAction(self.menuFile.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -231,9 +270,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.value_button.setText(_translate("MainWindow", "Значения"))
-        self.value_button.onload_styles()
         self.phrases_button.setText(_translate("MainWindow", "Фразы"))
-        self.phrases_button.onload_styles()
         self.add_new.setText(_translate("MainWindow", "Добавить новый элемент"))
         self.key_field.setPlaceholderText(_translate("MainWindow", "Ключ"))
         self.text_field.setPlaceholderText(_translate("MainWindow", "Значение"))

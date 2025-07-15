@@ -2,11 +2,10 @@
 <Config>
   <Values>
     <Value key="company">Медицинский центр</Value>
-    <Value key="username">user</Value>
   </Values>
   <Phrases>
     <Phrase key="Gretting">Здраствуйте, {username}, вас приветствует {company}!<Params>
-        <Param required="true">username</Param>
+        <Param required="false">username</Param>
         <Param required="true">company</Param>
       </Params>
     </Phrase>

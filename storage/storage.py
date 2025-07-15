@@ -175,6 +175,13 @@ class Storage(StorageInterface):
     def save_data(self, filepath: str) -> str|None:
         return XMLParser.save_to_file(filepath, self.Phrases, self.Values)
     
+    def clear_data(self) -> None:
+        """
+        Очистка данных в хранилище
+        """
+        self.Phrases.clear()
+        self.Values.clear()
+    
     def search_phrases_by_text(self, text: str) -> Tuple[list[Phrase], str|None]:
         found_phrases = [phrase for phrase in self.Phrases if (text.lower() in phrase.text.lower() or text.lower() in phrase.key.lower())]
         return found_phrases, None
