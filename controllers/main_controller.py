@@ -21,6 +21,7 @@ class MainController(BaseController):
         self._view.actionSave.triggered.connect(lambda: self.__save_to_file(self.__loaded_filepath))
         self._view.actionOpen.triggered.connect(self.__load_from_file)
         self._view.add_button.clicked.connect(self.__add_rec)
+        self._view.search_button.clicked.connect(lambda: self.__on_search(self._view.selector.get_selected()))
 
     
     def __on_selection_changed(self, button:SelectButton|None):
@@ -37,6 +38,20 @@ class MainController(BaseController):
         else:
             self.__no_selection()
             print("No button selected")
+
+    def __on_search(self, button:SelectButton|None):
+        """Обработчик поиска"""
+        search_text = self._view.search_field.text().strip()
+        if not search_text:
+            PyQt6.QtWidgets.QMessageBox.warning(self._view, "Ошибка", "Поле поиска не может быть пустым")
+            return
+        
+        if button.objectName() == "value_button":
+            self.__valueController.show_values(search_text)
+        elif button.objectName() == "phrases_button":
+            self.__phraseController.show_phrases(search_text)
+        else:
+            PyQt6.QtWidgets.QMessageBox.warning(self._view, "Ошибка", "Выберите категорию для поиска")
 
     def __no_selection(self):
         self._hide_frame()
@@ -77,19 +92,19 @@ class MainController(BaseController):
             return
         button = self._view.selector.get_selected()
         if button.objectName() == "value_button":
-            if not Validator.is_valid_key(key):
+            if not Validator.ValueValidator.is_valid_key(key):
                 PyQt6.QtWidgets.QMessageBox.warning(self._view, "Ошибка", "Ключ должен содержать только буквы, цифры и символы подчеркивания")
                 return
-            if not Validator.is_valid_text(text):
+            if not Validator.ValueValidator.is_valid_text(text):
                 PyQt6.QtWidgets.QMessageBox.warning(self._view, "Ошибка", "Текст не должен содержать специальные символы")
                 return
             value = Value(key, text)
             self.__valueController.add_value(value)
         elif button.objectName() == "phrases_button":
-            if not Validator.is_valid_key(key):
+            if not Validator.PhraseValidator.is_valid_key(key):
                 PyQt6.QtWidgets.QMessageBox.warning(self._view, "Ошибка", "Ключ должен содержать только буквы, цифры и символы подчеркивания")
                 return
-            if not Validator.is_valid_text(text):
+            if not Validator.PhraseValidator.is_valid_text(text):
                 PyQt6.QtWidgets.QMessageBox.warning(self._view, "Ошибка", "Текст не должен содержать символы &, [, ]")
                 return
             self.__phraseController.add_phrase(key, text)

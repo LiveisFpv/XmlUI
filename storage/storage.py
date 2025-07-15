@@ -4,7 +4,7 @@ from models.value import Value
 from utils.XMLparser import XMLParser
 
 class StorageInterface:
-    def searchPhrasesByText(text:str)->Tuple[list[Phrase],str|None]:
+    def search_phrases_by_text(text:str)->Tuple[list[Phrase],str|None]:
         """
         Поиск фраз по тексту
         

@@ -11,7 +11,7 @@ class ValueController(BaseController):
     def __init__ (self,view :MainWindow,storage:StorageInterface):
         super().__init__(view, storage)
     
-    def show_values(self):
+    def show_values(self, search_text: str|None = None):
         """Показать параметры"""
         self._show_frame()
         self._view.frame_name.setText("Параметры")
@@ -22,7 +22,10 @@ class ValueController(BaseController):
 
         # Получаем значения из хранилища
         values : list[Value]
-        values, error = self._storage.get_values()
+        if search_text:
+            values, error = self._storage.search_values_by_text(search_text)
+        else:
+            values, error = self._storage.get_values()
         if error:
             PyQt6.QtWidgets.QMessageBox.critical(self._view, "Ошибка", error)
             return

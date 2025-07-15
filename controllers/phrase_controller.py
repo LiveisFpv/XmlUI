@@ -1,7 +1,7 @@
 import PyQt6
 from designs.scroll_item import ScrollItem
 from views.main_window import MainWindow
-from models.phrase import Phrase
+from models.phrase import Phrase, Param
 from storage.storage import StorageInterface
 from controllers.base_controller import BaseController
 from designs.edit_dialog import EditPhraseDialog
@@ -11,7 +11,7 @@ class PhraseController(BaseController):
     def __init__ (self,view :MainWindow,storage:StorageInterface):
         super().__init__(view, storage)
     
-    def show_phrases(self):
+    def show_phrases(self, search_text: str|None = None):
         """Показать фразы"""
         self._show_frame()
         self._view.frame_name.setText("Фразы")
@@ -22,7 +22,10 @@ class PhraseController(BaseController):
 
         # Получаем фразы из хранилища
         phrases : list[Phrase]
-        phrases, error = self._storage.get_phrases()
+        if search_text:
+            phrases, error = self._storage.search_phrases_by_text(search_text)
+        else:
+            phrases, error = self._storage.get_phrases()
         if error:
             PyQt6.QtWidgets.QMessageBox.critical(self._view, "Ошибка", error)
             return
@@ -40,8 +43,19 @@ class PhraseController(BaseController):
 
             self._view.scroll_layout.addWidget(item)
     
+    def parse_parameters(self, text: str) -> list[Param]:
+        """Парсинг параметров из текста"""
+        params = []
+        parts = text.split("{")
+        for part in parts[1:]:
+            if "}" in part:
+                param_name = part.split("}")[0].strip()
+                if param_name:
+                    params.append(Param(param_name, "true"))
+        return params
+
     def add_phrase(self, key: str, text: str):
-        phrase = Phrase(key, text, [])
+        phrase = Phrase(key, text, self.parse_parameters(text))
         error = self._storage.add_phrase(phrase)
         if error:
             PyQt6.QtWidgets.QMessageBox.critical(self._view, "Ошибка", error)
@@ -57,6 +71,8 @@ class PhraseController(BaseController):
         if not Validator.PhraseValidator.is_valid_text(new_phrase.text):
             PyQt6.QtWidgets.QMessageBox.warning(self._view, "Ошибка", "Текст не должен содержать символы &, [, ]")
             return
+        # Парсинг параметров
+        new_phrase.params = self.parse_parameters(new_phrase.text)
         error = self._storage.edit_phrase(old_key, new_phrase)
         if error:
             PyQt6.QtWidgets.QMessageBox.critical(self._view, "Ошибка", error)
