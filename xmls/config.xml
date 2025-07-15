@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Config>
+  <Values>
+    <Value key="company">Медицинский центр</Value>
+  </Values>
+
+  <Phrases>
+  
+    <Phrase key = "Gretting">
+      Здраствуйте, {username}, вас приветствует {company}!
+      <Params>
+        <Param required="true">username</Param>
+        <Param required="false">company</Param>
+      </Params>
+    </Phrase>
+
+    <Phrase key = "GetUserRequest">
+      Чем я могу вам помочь?
+    </Phrase>
+
+    <Phrase key = "GetDoctorName">
+      К какому врачу вы хотите записаться?
+    </Phrase>
+
+    <Phrase key = "ConfirmDoctorName">
+      {doctorName} - это правильное ФИО врача?
+      <Params>
+        <Param required="true">doctorName</Param>
+      </Params>
+    </Phrase>
+
+    <Phrase key = "GetDoctorSpecialization">
+      Какой специализации должен быть врач?
+    </Phrase>
+
+    <Phrase key = "ConfirmDoctorSpecialization">
+      {specialization} - это правильная специализация врача?
+      <Params>
+        <Param required="true">specialization</Param>
+      </Params>
+    </Phrase>
+
+    <Phrase key = "GetDoctorDate">
+      На какую дату вы хотите записаться? Ближайшие доступные даты: {dates}.
+      <Params>
+        <Param required="true">dates</Param>
+      </Params>
+    </Phrase>
+
+    <Phrase key = "ConfirmDoctorDate">
+      {date} - это правильная дата?
+      <Params>
+        <Param required="true">date</Param>
+      </Params>
+    </Phrase>
+
+    <Phrase key = "GetDoctorTime">
+      На какое время вы хотите записаться? Ближайшие доступные слоты: {slots}.
+      <Params>
+        <Param required="true">slots</Param>
+      </Params>
+    </Phrase>
+
+    <Phrase key = "ConfirmDoctorTime">
+      {time} - это правильное время?
+      <Params>
+        <Param required="true">time</Param>
+      </Params>
+    </Phrase>
+
+    <Phrase key = "WhoPatient">
+      Кого вы хотите записать на прием?
+    </Phrase>
+
+    <Phrase key ="GetPatientName">
+      Как зовут пациента?
+    </Phrase>
+
+    <Phrase key = "ConfirmPatient">
+      {patientName} - это правильное ФИО пациента?
+      <Params>
+        <Param required="true">patientName</Param>
+      </Params>
+    </Phrase>
+
+    <Phrase key = "GetPatientPhone">
+      Какой номер телефона пациента?
+    </Phrase>
+
+    <Phrase key = "ConfirmPatientPhone">
+      {phone} - это правильный номер телефона?
+      <Params>
+        <Param required="true">phone</Param>
+      </Params>
+    </Phrase>
+
+    <Phrase key = "SwitchtoOperator">
+      Вы хотите переключиться на оператора?
+    </Phrase>
+
+    <Phrase key="AppointmentConfirmed">
+      Запись на прием к врачу {doctorName} по специализации {specialization} на {date} в {time} создана.
+      <Params>
+        <Param required="true">doctorName</Param>
+        <Param required="true">specialization</Param>
+        <Param required="true">date</Param>
+        <Param required="true">time</Param>
+      </Params>
+    </Phrase>
+  
+  </Phrases>
+</Config>

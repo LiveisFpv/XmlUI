@@ -221,6 +221,7 @@ class Ui_MainWindow(object):
         self.actionNew_file.setIconVisibleInMenu(True)
         self.actionNew_file.setShortcutVisibleInContextMenu(True)
         self.actionNew_file.setObjectName("actionNew_file")
+        self.verticalLayout_7.addStretch()
         self.menuFile.addAction(self.actionNew_file)
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionSave)

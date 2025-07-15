@@ -1,3 +1,4 @@
 class Param:
-    name: str
-    required: str
+    def __init__(self, name: str, required: str):
+        self.name = name
+        self.required = required

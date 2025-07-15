@@ -1,8 +1,7 @@
 from typing import List, Tuple
 from models.phrase import Phrase
 from models.value import Value
-from storage.quieries.phrases import PhraseQueries
-from storage.quieries.values import ValueQueries
+from utils.XMLparser import XMLParser
 
 class StorageInterface:
     def searchPhrasesByText(text:str)->Tuple[List[Phrase],str]:
@@ -19,7 +18,7 @@ class StorageInterface:
         """
         raise NotImplementedError()
     
-    def getPhrases()->Tuple[List[Phrase],str]:
+    def get_phrases()->Tuple[List[Phrase],str]:
         """
         Получение всех фраз
             
@@ -30,7 +29,7 @@ class StorageInterface:
         """
         raise NotImplementedError()
 
-    def getValues()->Tuple[List[Phrase],str]:
+    def get_values()->Tuple[List[Value],str]:
         """
         Получение всех значений
             
@@ -41,7 +40,7 @@ class StorageInterface:
         """
         raise NotImplementedError()
 
-    def searchValuesByText(text:str)->Tuple[List[Value],str]:
+    def search_values_by_text(text:str)->Tuple[List[Value],str]:
         """
         Поиск значений по тексту
         
@@ -59,12 +58,30 @@ class StorageInterface:
 
 class Storage(StorageInterface):
     def __init__(self):
-        # Получаем данные из XML/JSON/DB
         self.Values=[]
         self.Phrases=[]
+
+    def load_data(self,filepath: str)-> str|None:
+        phrases, values, error = XMLParser.load_from_file(filepath)
+        if error:
+            return error
+        
+        self.Phrases = phrases
+        self.Values = values
+
+        return None 
     
-    def search_phrases_by_text(self, text: str) -> Tuple[List[Phrase], str]:
-        return PhraseQueries.search_by_text(text)
+    def save_data(self, filepath: str) -> str|None:
+        return XMLParser.save_to_file(filepath, self.Phrases, self.Values)
     
-    def search_values_by_text(self, text: str) -> Tuple[List[Value], str]:
-        return ValueQueries.search_by_text(text)
+    def search_phrases_by_text(self, text: str) -> Tuple[List[Phrase], str|None]:
+        return NotImplementedError()
+    
+    def get_phrases(self) -> Tuple[List[Phrase], str|None]:
+        return self.Phrases, None
+    
+    def get_values(self) -> Tuple[List[Value], str|None]:
+        return self.Values, None
+    
+    def search_values_by_text(self, text: str) -> Tuple[List[Value], str|None]:
+        return NotImplementedError()
