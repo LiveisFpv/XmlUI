@@ -87,5 +87,32 @@ class ScrollItem(QWidget):
         self.scroll_layout.setContentsMargins(0, 0, 0, 0)
         self.scroll_layout.setSpacing(12)
         self.scroll_layout.addWidget(self.widget)
+
+        # Сохраняем данные элемента
+        self.key = title
+        self.description_text = description
+
+        # Подключаем кнопки к слотам
+        self.edit_button.clicked.connect(self.on_edit_clicked)
+        self.delete_button.clicked.connect(self.on_delete_clicked)
+
+        # Callback-функции, которые будут установлены извне
+        self.edit_callback = None
+        self.delete_callback = None
+
+    def set_callbacks(self, edit_callback, delete_callback):
+        """Установка callback-функций для кнопок"""
+        self.edit_callback = edit_callback
+        self.delete_callback = delete_callback
+    
+    def on_edit_clicked(self):
+        """Обработчик кнопки редактирования"""
+        if self.edit_callback:
+            self.edit_callback(self.key)
+    
+    def on_delete_clicked(self):
+        """Обработчик кнопки удаления"""
+        if self.delete_callback:
+            self.delete_callback(self.key)
     
     

@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Config>
+  <Values>
+    <Value key="asd">asd</Value>
+  </Values>
+  <Phrases>
+    <Phrase key="gretting">Hi {asd} I {asd}!</Phrase>
+  </Phrases>
+</Config>

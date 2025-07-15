@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Config>
+  <Values>
+    <Value key="add">value</Value>
+  </Values>
+  <Phrases>
+    <Phrase key="add">phrase</Phrase>
+  </Phrases>
+</Config>

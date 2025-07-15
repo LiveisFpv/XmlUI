@@ -2,24 +2,35 @@ from views.main_window import MainWindow
 import PyQt6.QtWidgets
 from designs.select_button import SelectButton
 from storage.storage import StorageInterface
+from designs.scroll_item import ScrollItem
+from models.value import Value
+from models.phrase import Phrase
+from controllers.phrase_controller import PhraseController
+from controllers.value_controller import ValueController
+from controllers.base_controller import BaseController
+from utils.validator import Validator
 
-class MainController:
+class MainController(BaseController):
     def __init__(self, view: MainWindow, storage:StorageInterface):
-        self.__view = view
-        self.__storage = storage
-        self.__view.selector.selection_changed.connect(self.__on_selection_changed)
-        self.__view.actionSave_as.triggered.connect(self.__save_to_file)
-        self.__view.actionOpen.triggered.connect(self.__load_from_file)
+        super().__init__(view, storage)
+        self.__loaded_filepath = None
+        self.__phraseController = PhraseController(view,storage)
+        self.__valueController = ValueController(view,storage)
+        self._view.selector.selection_changed.connect(self.__on_selection_changed)
+        self._view.actionSave_as.triggered.connect(lambda: self.__save_to_file(None))
+        self._view.actionSave.triggered.connect(lambda: self.__save_to_file(self.__loaded_filepath))
+        self._view.actionOpen.triggered.connect(self.__load_from_file)
+        self._view.add_button.clicked.connect(self.__add_rec)
 
     
     def __on_selection_changed(self, button:SelectButton|None):
         """Обработчик изменения выбора кнопки"""
         if button:
             if button.objectName() == "value_button":
-                self.__show_values()
+                self.__valueController.show_values()
                 print("Value button selected")
             elif button.objectName() == "phrases_button":
-                self.__show_phrases()
+                self.__phraseController.show_phrases()
                 print("Phrases button selected")
             else:
                 print(f"Selected button: {button.objectName()}")
@@ -28,53 +39,59 @@ class MainController:
             print("No button selected")
 
     def __no_selection(self):
-        self.__hide_frame()
-    
-    def __show_phrases(self):
-        """Показать фразы"""
-        self.__show_frame()
-        self.__storage.get_phrases()
-        self.__view.frame_name.setText("Фразы")
-        self.__view.frame_text.setText("Текстовые шаблоны с параметрами")
+        self._hide_frame()
 
-
-    def __show_values(self):
-        """Показать параметры"""
-        self.__show_frame()
-        self.__storage.get_values()
-        self.__view.frame_name.setText("Параметры")
-        self.__view.frame_text.setText("Параметры с дефолтными значениями")
-
-    def __hide_frame(self):
-        """Скрыть текущий фрейм"""
-        for i in range(self.__view.verticalLayout_2.count()):
-            widget = self.__view.verticalLayout_2.itemAt(i).widget()
-            if widget:
-                widget.hide()
-
-    def __show_frame(self):
-        for i in range(self.__view.verticalLayout_2.count()):
-            widget = self.__view.verticalLayout_2.itemAt(i).widget()
-            if widget:
-                widget.show()
 
     def __load_from_file(self):
         """Загрузить данные из файла"""
-        filepath, _ = PyQt6.QtWidgets.QFileDialog.getOpenFileName(self.__view, "Открыть файл", "", "XML Files (*.xml);;All Files (*)")
+        filepath, _ = PyQt6.QtWidgets.QFileDialog.getOpenFileName(self._view, "Открыть файл", "", "XML Files (*.xml);;All Files (*)")
         if filepath:
-            error = self.__storage.load_data(filepath)
+            error = self._storage.load_data(filepath)
             if error:
-                PyQt6.QtWidgets.QMessageBox.critical(self.__view, "Ошибка", f"Не удалось загрузить данные: {error}")
+                PyQt6.QtWidgets.QMessageBox.critical(self._view, "Ошибка", f"Не удалось загрузить данные: {error}")
             else:
-                self.__view.selector.clear_selection()
-                self.__no_selection()
+                self.__on_selection_changed(self._view.selector.get_selected())
+                self.__loaded_filepath = filepath
     
-    def __save_to_file(self):
+    def __save_to_file(self,filepath: str | None):
         """Сохранить данные в файл"""
-        filepath, _ = PyQt6.QtWidgets.QFileDialog.getSaveFileName(self.__view, "Сохранить файл", "", "XML Files (*.xml);;All Files (*)")
+        if not filepath:
+            filepath, _ = PyQt6.QtWidgets.QFileDialog.getSaveFileName(self._view, "Сохранить файл", "", "XML Files (*.xml);;All Files (*)")
         if filepath:
-            error = self.__storage.save_data(filepath)
+            error = self._storage.save_data(filepath)
             if error:
-                PyQt6.QtWidgets.QMessageBox.critical(self.__view, "Ошибка", f"Не удалось сохранить данные: {error}")
+                PyQt6.QtWidgets.QMessageBox.critical(self._view, "Ошибка", f"Не удалось сохранить данные: {error}")
             else:
-                PyQt6.QtWidgets.QMessageBox.information(self.__view, "Успех", "Данные успешно сохранены")
+                PyQt6.QtWidgets.QMessageBox.information(self._view, "Успех", "Данные успешно сохранены")
+                self.__loaded_filepath = filepath
+
+    def __add_rec(self):
+        """Добавить запись"""
+        key = self._view.key_field.text().strip()
+        if not key:
+            PyQt6.QtWidgets.QMessageBox.warning(self._view, "Ошибка", "Ключ не может быть пустым")
+            return
+        text = self._view.text_field.toPlainText().strip()
+        if not text:
+            PyQt6.QtWidgets.QMessageBox.warning(self._view, "Ошибка", "Текст не может быть пустым")
+            return
+        button = self._view.selector.get_selected()
+        if button.objectName() == "value_button":
+            if not Validator.is_valid_key(key):
+                PyQt6.QtWidgets.QMessageBox.warning(self._view, "Ошибка", "Ключ должен содержать только буквы, цифры и символы подчеркивания")
+                return
+            if not Validator.is_valid_text(text):
+                PyQt6.QtWidgets.QMessageBox.warning(self._view, "Ошибка", "Текст не должен содержать специальные символы")
+                return
+            value = Value(key, text)
+            self.__valueController.add_value(value)
+        elif button.objectName() == "phrases_button":
+            if not Validator.is_valid_key(key):
+                PyQt6.QtWidgets.QMessageBox.warning(self._view, "Ошибка", "Ключ должен содержать только буквы, цифры и символы подчеркивания")
+                return
+            if not Validator.is_valid_text(text):
+                PyQt6.QtWidgets.QMessageBox.warning(self._view, "Ошибка", "Текст не должен содержать символы &, [, ]")
+                return
+            self.__phraseController.add_phrase(key, text)
+        else:
+            PyQt6.QtWidgets.QMessageBox.warning(self._view, "Ошибка", "Выберите категорию для добавления записи")
